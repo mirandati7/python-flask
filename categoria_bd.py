@@ -10,20 +10,20 @@ from conexao import conecta_db
 #  DROP table
 #  Alter table 
 
-def consultar(conexao):
+def consultar_categoria(conexao):
     cursor = conexao.cursor()
     cursor.execute("select id,nome from categoria order by id asc")
     registros = cursor.fetchall()
     return registros
 
 
-def inserir(conexao, nome):
+def inserir_categoria(conexao, nome):
     cursor = conexao.cursor()
     sql_insert = "insert into categoria (nome) values ('"+ nome +  "')"
     cursor.execute(sql_insert)
     conexao.commit()
         
-def alterar(conexao):
+def alterar_categoria(conexao):
     cursor = conexao.cursor()
     id = input("Digite o ID: ")
     nome_categoria = input('Digite o nome da categoria: ')
@@ -32,7 +32,7 @@ def alterar(conexao):
     conexao.commit()
 
 
-def deletar(conexao):
+def deletar_categoria(conexao):
     cursor = conexao.cursor()
     id = input("Digite o ID: ")
     sql_delete = "delete from  categoria where id = " + id
