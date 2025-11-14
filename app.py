@@ -1,4 +1,4 @@
-from flask  import Flask,render_template, request
+from flask  import Flask,render_template, request, redirect,url_for
 
 from conexao import conecta_db
 from categoria_bd import inserir_categoria, consultar_categoria
@@ -8,7 +8,7 @@ from produto_db import listar_produtos_bd, inserir_produto_bd
 app = Flask(__name__)
 
 @app.route('/')
-def principal():
+def home():
     nome = "Sistema de Vendas"
     return render_template("index.html",nome=nome)
 
@@ -46,7 +46,7 @@ def salvar_categoria():
 
 
 @app.route("/listar-categorias", methods=['GET','POST'])
-def listar_categorias():
+def categoria_listar():
     conexao = conecta_db()
     categorias = consultar_categoria(conexao)
     return render_template("categoria_listar.html",categorias=categorias)
@@ -84,6 +84,13 @@ def salvar_produto():
     return render_template("produto_form.html")
 
 
+@app.route('/categorias/<int:id>/editar', methods=['GET', 'POST']) 
+def categorias_editar(id):
+    return redirect(url_for('categorias_listar'))
+
+@app.route('/categorias/<int:id>/excluir', methods=['GET', 'POST']) 
+def categorias_excluir(id):
+    return redirect(url_for('categorias_listar'))
 
 if __name__ == '__main__':
     app.run(debug=True)

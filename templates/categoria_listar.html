@@ -1,34 +1,40 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listar Categorias</title>
-</head>
-<body>
-    <h2> Categorias cadastradas</h2>
+{% extends 'base.html' %}
+{% block title %}Categorias{% endblock %}
+{% block content %}
 
-    {% if categorias %}
-        <table border="1" cellpadding="6">
+<div class="d-flex justify-content-between mb-3">
+  <h1 class="h4">Categorias</h1>
+</div>
+
+{% if categorias %}
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <th> Id</th>
-                <th> Nome</th>
+                <th> Id   </th>
+                <th> Nome </th>
+                <th> Ações</th>
             </tr>
+        </thead>
+        <tbody>
             {% for item in categorias %}
             <tr>
                 <td> {{item[0]}}  </td>
                 <td> {{item[1]}} </td>
+                <td>
+                    <a href="" class="btn btn-sm btn-secondary">Editar</a>		
+		            <button class="btn btn-sm btn-danger" onclick="return confirm('Excluir?')">Excluir</button>
+                </td>
+                
             </tr>
             {% endfor %}
-
-        </table>
-    {% else %}
-        <p> Nenhuma categoria encontrada</p>
-    {% endif %}
-
+        </tbody>
+   
+    </table>
+{% else %}
+    <p> Nenhuma categoria encontrada</p>
+{% endif %}
+{% endblock %}
 
 
 
     
-</body>
-</html>
