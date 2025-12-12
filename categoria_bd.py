@@ -32,9 +32,8 @@ def alterar_categoria(conexao):
     conexao.commit()
 
 
-def deletar_categoria(conexao):
-    cursor = conexao.cursor()
-    id = input("Digite o ID: ")
-    sql_delete = "delete from  categoria where id = " + id
-    cursor.execute(sql_delete)
+def deletar_categoria_bd(conexao, id_categoria):
+    cursor = conexao.cursor()    
+    cursor.execute("DELETE FROM categoria WHERE id = %s", (id_categoria,))
     conexao.commit()
+    cursor.close()

@@ -1,36 +1,44 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listar Clientes</title>
-</head>
-<body>
-    <h2> Clientes cadastrados</h2>
+{% extends 'base.html' %}
+{% block title %}Categorias{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between mb-3">
+  <h1 class="h4">Clientes Cadastrados</h1>
+  <a href="{{ url_for('salvar_cliente') }}" class="btn btn-success">Novo Cliente</a>
+</div>
+
 
     {% if clientes %}
-        <table border="1" cellpadding="6">
-            <tr>
-                <th> Id</th>
-                <th> Nome</th>
-                <th> Celular</th>
-                <th> Email</th>
-                <th> CPF/CNPJ </th>
-            </tr>
-            {% for item in clientes %}
-            <tr>
-                <td> {{item[0]}}  </td>
-                <td> {{item[1]}} </td>
-                <td> {{item[2]}} </td>
-                <td> {{item[3]}} </td>
-                <td> {{item[4]}} </td>
-            </tr>
-            {% endfor %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th> Id</th>
+                    <th> Nome</th>
+                    <th> Celular</th>
+                    <th> Email</th>
+                    <th> CPF/CNPJ </th>
+                    <th> Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in clientes %}
+                    <tr>
+                        <td> {{item[0]}}  </td>
+                        <td> {{item[1]}} </td>
+                        <td> {{item[2]}} </td>
+                        <td> {{item[3]}} </td>
+                        <td> {{item[4]}} </td>
+                        <td>
+                            <a href="" class="btn btn-sm btn-secondary">Editar</a>		
+		                    <button class="btn btn-sm btn-danger" onclick="return confirm('Excluir?')">Excluir</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
 
         </table>
     {% else %}
         <p> Nenhuma cliente encontrado</p>
     {% endif %}
     
-</body>
-</html>
+{% endblock %}
