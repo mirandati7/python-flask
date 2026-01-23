@@ -4,7 +4,7 @@ from conexao import conecta_db
 from categoria_bd import inserir_categoria, consultar_categoria, deletar_categoria_bd
 from cliente_bd import inserir_cliente, listar_clientes_bd
 from produto_db import listar_produtos_bd, inserir_produto_bd
-from usuario_bd import inserir_usuario_bd, listar_usuarios_bd, deletar_usuario_db
+from usuario_bd import inserir_usuario_bd, listar_usuarios_bd, deletar_usuario_db, login_bd
 
 app = Flask(__name__)
 
@@ -25,9 +25,17 @@ def login():
         if not usuario or not senha:
             erro = "Preencha usuário e senha para entrar."
             return render_template("login.html", erro=erro)
+        
+        conexao = conecta_db()
+        valida_login = login_bd(conexao,usuario, senha)
+        # Antes de redirecionar vamos fazer a validação do usuario e senha
 
-        return redirect(url_for('home'))
-
+        if valida_login == "OK":
+            return redirect(url_for('home'))
+        else:
+            return render_template("login.html",erro=valida_login)
+        
+    # Obriga a passar no login.html    
     return render_template("login.html")
 
 
@@ -67,13 +75,18 @@ def salvar_usuario():
     if request.method == 'POST':
         login = request.form.get('login')
         senha = request.form.get('senha')
+        confirmar_senha =request.form.get('confirmar_senha')
 
         if not login and senha:
             return "<h3> Por favor, preencha todos os campos</h3"
-        
+        retorno_usuario = ""         
         conexao = conecta_db()
-        inserir_usuario_bd(conexao,login,senha,'S')
-        return f"<h2> Usuário Salvo com Sucesso:  {login} </h2>"
+        if senha == confirmar_senha:
+            retorno_usuario =  inserir_usuario_bd(conexao,login,senha,'S')
+        else:
+            retorno_usuario = "Senhas e Confirmar senha não são iguais"
+
+        return f"<h2> Mensagem :  {retorno_usuario} </h2>"
     return render_template("usuario_form.html",titulo ="Cadastro de Usuário")
 
 

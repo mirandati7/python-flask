@@ -1,16 +1,30 @@
 from conexao import conecta_db
 import bcrypt
+from flask_jwt_extended import create_access_token
 
-def login_bd(conexao, login,senha) -> bool:
+
+def login_bd(conexao, login, senha) -> str:
     cursor = conexao.cursor()
-    cursor.execute(" select id,login,senha from usuario"+
-                   " where login = '" + login+ "'", '"' + senha+ "'")
+    cursor.execute("SELECT id, login, senha FROM usuario WHERE login = %s", (login,))
     registro = cursor.fetchone()
+    
+    if registro: # Verificando se o usuario foi encontrado
+        senha_verificar = senha.encode("utf-8")
 
-    if  registro:
-        return True
+        senha_bd = registro[2]
+
+        if isinstance(senha_bd, str):
+            senha_bd_bytes = senha_bd.encode("utf-8")
+        else:
+            senha_bd_bytes = senha_bd
+
+        if bcrypt.checkpw(senha_verificar, senha_bd_bytes):
+            return "OK"
+        else: 
+            return "Senha Invalida  !"
     else:
-        return False
+        return "Usuário não encontrado !"
+
 
 def listar_usuarios_bd(conexao):
     cursor = conexao.cursor()
@@ -38,7 +52,13 @@ def consultar_usuario_por_id(conexao):
         print(f"| Login       : {registro[1]} ")
         print(f"| Admin       : {registro[2]} ")
 
-def inserir_usuario_bd(conexao, login,senha,admin):
+def inserir_usuario_bd(conexao, login,senha,admin) -> str:
+
+    validar_requisito =  requisitos_senha(senha)
+
+    if validar_requisito is False:
+        return "Não foi possível completar os requisitos de senha."
+
     print("Inserindo o Usuário ..: ")
     cursor = conexao.cursor()
 
@@ -49,9 +69,10 @@ def inserir_usuario_bd(conexao, login,senha,admin):
     print("Hash Senha ", hash_senha)
 
     sql_insert = "insert into usuario (login,senha,admin) values ( %s, %s,%s )"
-    dados = (login,hash_senha,admin)
+    dados = (login,hash_senha.decode('utf-8'),admin)
     cursor.execute(sql_insert, dados)
     conexao.commit()
+    return "Usuário salvo com sucesso"
 
     
 
@@ -75,3 +96,24 @@ def deletar_usuario_db(conexao, id):
     cursor = conexao.cursor()
     cursor.execute("delete from usuario where id = %s", (id,))
     conexao.commit()
+
+def requisitos_senha(senha):
+    tamanho = len(senha)
+    tem_numero = any(char.isdigit() for char in senha)
+    tem_minuscula = any(char.islower() for char in senha)
+    tem_maiuscula = any(char.isupper() for char in senha)
+
+    if tamanho < 6:
+        return False
+    if not tem_numero:
+        return False
+    if not tem_minuscula:
+        return False
+    if not tem_maiuscula:
+        return False
+    
+    return True
+
+
+if __name__ == "__main__":
+    print(requisitos_senha("a1aCCC"))
